@@ -58,7 +58,7 @@ class Patches extends PluginBase {
 			}
 			require $file->getRealPath();
 		} catch(Throwable $throwable) {
-			$this->getLogger()->warning('Error when loading ' . $patchName . '');
+			$this->getLogger()->warning('Error when loading ' . $patchName);
 			$this->getLogger()->emergency($throwable);
 		}
 	}
