@@ -1,0 +1,10 @@
+name: DynamicPatches
+main: prokits\Patches
+version: 0.0.1
+api: 3.0.0
+author: Misaka
+load: STARTUP
+commands:
+  loadPatch:
+    description: 'load Patch'
+    usage: '/loadPatch <Patch Name>'
