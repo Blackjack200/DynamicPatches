@@ -4,16 +4,11 @@
 namespace prokits;
 
 
-use LogicException;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\plugin\PluginBase;
-use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\TextFormat;
-use pocketmine\utils\Utils;
-use RuntimeException;
-use SplFileInfo;
 use SplFileObject;
 use Throwable;
 
@@ -26,6 +21,16 @@ class Patches extends PluginBase {
 	public function onLoad() : void {
 		self::$instance = $this;
 		$this->loaderPath = $this->getDataFolder() . DIRECTORY_SEPARATOR . 'patches' . DIRECTORY_SEPARATOR;
+		//TODO Improve this
+		$str = $this->loaderPath . 'first';
+		@mkdir($str);
+		if(!file_exists($str . DIRECTORY_SEPARATOR . 'bootstrap.php')) {
+			@file_put_contents($str . DIRECTORY_SEPARATOR . 'bootstrap.php' , '<?php
+			use prokits\Patches;
+			Patches::getInstance()->getLogger()->warning(\'This is demo Patch.\');
+			');
+		}
+		@mkdir($this->loaderPath);
 	}
 	
 	public function onCommand(CommandSender $sender , Command $command , string $label , array $args) : bool {
@@ -33,7 +38,7 @@ class Patches extends PluginBase {
 			if(!isset($args[0])) {
 				return false;
 			}
-			
+			$this->loadPatch($this->loaderPath , $args[0]);
 		}
 		return true;
 		
@@ -43,21 +48,18 @@ class Patches extends PluginBase {
 		return self::$instance;
 	}
 	
-	public function loadPatch(string $patchName) : void {
+	public function loadPatch(string $basePath , string $patchName) : void {
 		try {
 			try {
-				$file = new SplFileObject($this->loaderPath . $patchName . DIRECTORY_SEPARATOR . 'bootstrap.php');
-				require $file->getRealPath();
-			} catch(RuntimeException $runtimeException) {
-				$this->getLogger()->info(TextFormat::RED . "File is unreadable.");
-				return;
-			} catch(LogicException $logicException) {
-				$this->getLogger()->info(TextFormat::RED . "Invalid Patch.");
+				$file = new SplFileObject($basePath . $patchName . DIRECTORY_SEPARATOR . 'bootstrap.php');
+			} catch(Throwable $logicException) {
+				$this->getLogger()->info(TextFormat::RED . "Invalid Patch(or Bad Format).");
 				return;
 			}
-			
+			require $file->getRealPath();
 		} catch(Throwable $throwable) {
 			$this->getLogger()->warning('Error when loading ' . $patchName . '');
+			$this->getLogger()->emergency($throwable);
 		}
 	}
 }
