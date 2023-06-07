@@ -9,8 +9,8 @@ use pocketmine\command\CommandSender;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\plugin\PluginBase;
 use SplFileObject;
+use Symfony\Component\Filesystem\Path;
 use Throwable;
-use Webmozart\PathUtil\Path;
 
 class Patches extends PluginBase {
 	private static self $instance;
