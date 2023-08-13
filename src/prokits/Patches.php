@@ -14,22 +14,9 @@ use Throwable;
 
 class Patches extends PluginBase {
 	private static self $instance;
-	private string $loaderPath;
 
 	public function onLoad() : void {
 		self::$instance = $this;
-		$this->loaderPath = Path::join($this->getDataFolder(), 'patches');
-		@mkdir($this->loaderPath);
-		$demoPatch = Path::join($this->loaderPath, 'demo');
-		if (!is_dir($demoPatch)) {
-			@mkdir($demoPatch);
-			if (!file_exists(Path::join($demoPatch, 'bootstrap.php'))) {
-				@file_put_contents(Path::join($demoPatch, 'bootstrap.php'), '<?php
-			use prokits\Patches;
-			Patches::getInstance()->getLogger()->warning(\'This is demo Patch.\');
-			');
-			}
-		}
 	}
 
 	public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool {
@@ -37,7 +24,7 @@ class Patches extends PluginBase {
 			if (!isset($args[0])) {
 				return false;
 			}
-			$this->loadPatch($this->loaderPath, $args[0]);
+			$this->loadPatch($args[0]);
 		}
 		return true;
 
@@ -47,18 +34,19 @@ class Patches extends PluginBase {
 		return self::$instance;
 	}
 
-	public function loadPatch(string $basePath, string $patch) : void {
+	public function loadPatch(string $patch) : void {
+		$logger = $this->getLogger();
 		try {
 			try {
-				$file = new SplFileObject(Path::join($basePath, $patch, 'bootstrap.php'));
-			} catch (Throwable $logicException) {
-				$this->getLogger()->error("Invalid Patch $patch");
+				$file = new SplFileObject(Path::join($this->getDataFolder(), $patch, 'bootstrap.php'));
+			} catch (Throwable) {
+				$logger->error("Invalid Patch $patch");
 				return;
 			}
 			require $file->getRealPath();
 		} catch (Throwable $throwable) {
-			$this->getLogger()->error("Error when applying patch $patch");
-			$this->getLogger()->logException($throwable);
+			$logger->error("Error when applying patch $patch");
+			$logger->logException($throwable);
 		}
 	}
 }
