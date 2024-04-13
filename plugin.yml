@@ -1,6 +1,6 @@
 name: DynamicPatches
 main: prokits\Patches
-version: 1.0.0
+version: 2.0.0
 api: 5.0.0
 author: Misaka
 load: STARTUP

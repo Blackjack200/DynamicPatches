@@ -38,14 +38,14 @@ class Patches extends PluginBase {
 		$logger = $this->getLogger();
 		try {
 			try {
-				$file = new SplFileObject(Path::join($this->getDataFolder(), $patch, 'bootstrap.php'));
+				$file = new SplFileObject(Path::join($this->getDataFolder(), $patch . ".php"));
 			} catch (Throwable) {
-				$logger->error("Invalid Patch $patch");
+				$logger->error("invalid patch $patch.");
 				return;
 			}
 			require $file->getRealPath();
 		} catch (Throwable $throwable) {
-			$logger->error("Error when applying patch $patch");
+			$logger->error("error applying patch $patch.");
 			$logger->logException($throwable);
 		}
 	}
