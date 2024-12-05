@@ -1,15 +1,22 @@
 name: DynamicPatches
 main: prokits\Patches
-version: 2.0.0
+version: 2.1.0
 api: 5.0.0
 author: Misaka
 load: STARTUP
 commands:
   loadPatch:
-    description: 'load Patch'
-    usage: '/loadPatch <Patch Name>'
+    description: 'load patch'
+    usage: '/loadPatch <patch>'
+    permission: dynamicpatches.load
+  listPatch:
+    description: 'list available patches'
+    usage: '/listPatch'
     permission: dynamicpatches.load
 permissions:
   dynamicpatches.load:
     description: "load patch"
-    default: true
+    default: op
+  dynamicpatches.list:
+    description: "list patch"
+    default: op
